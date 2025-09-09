@@ -1,28 +1,32 @@
-# import ast
 import os
-import tomllib
-from typing import Any
+
+from .config import Config
 
 
 class Linter:
-    _CONFIG_NAME = "linter_config.toml"
-
     def __init__(self, files_path: str) -> None:
         (self.files, self.directory) = self._parse_files_path(files_path)
-        self.rules = self._load_rules()
+        self.config = Config.load_config(self.directory)
 
     def run(self) -> None:
-        for file in self.files:
-            code = self._read_code(file)
-            print(code)
+        for file_path in self.files:
+            code = self._read_file(file_path)
+            self._run_all_checks(code)
+
+    def _run_all_checks(self, code: str) -> None:
+        for rules in Config.RULES.keys():
+            rules_key = Config.RULES[rules]
+            local_config = self.config[rules_key]
+            rules(local_config, code).check()  # type: ignore[abstract]
 
     @staticmethod
-    def _read_code(file_path: str) -> str:
+    def _read_file(file_path: str) -> str:
         with open(file_path) as file:
             return file.read()
 
     @staticmethod
     def _parse_files_path(files_path: str) -> tuple[list[str], str]:
+        """Полученный из командной строки пути метод разбирает на список файлов и их директорию"""
         if os.path.isfile(files_path):
             if Linter._is_python_file(files_path):
                 return [files_path], os.path.dirname(files_path)
@@ -40,10 +44,5 @@ class Linter:
 
     @staticmethod
     def _is_python_file(file: str) -> bool:
+        """Проверка расширения .py у файла"""
         return os.path.splitext(file)[1] == ".py"
-
-    def _load_rules(self) -> dict[str, Any]:
-        with open(file=os.path.join(self.directory, self._CONFIG_NAME), mode="rb") as file:
-            config = tomllib.load(file)
-            print(config)
-        return config

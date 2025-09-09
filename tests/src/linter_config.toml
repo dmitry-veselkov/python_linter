@@ -1,6 +1,11 @@
-name = "если б мне платили каждый раз"
-[value]
-push = "каждый раз"
-pop = "когда я думаю о тебе"
-type = ["я бы бомжевала возле трасс", "я бы стала самой бедной из людей"]
-age = 52
+[spaces]
+all_true = true
+
+[empty_lines]
+all_true = true
+
+[naming]
+function_snake_case = true #802
+variables_snake_case = true #806
+agrs_snake_case = true #N803
+classes_camel_case = true #N801

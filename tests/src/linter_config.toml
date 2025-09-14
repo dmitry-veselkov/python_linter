@@ -7,5 +7,6 @@ all_true = true
 [naming]
 function_snake_case = true #802
 variables_snake_case = true #806
-agrs_snake_case = true #N803
-classes_camel_case = true #N801
+args_snake_case = true #N803
+class_camel_case = true #N801
+attributes_sname_case = true #N807

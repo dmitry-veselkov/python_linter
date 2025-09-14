@@ -1,15 +1,19 @@
-class Person:
-    def __init__(self, name: str, age: int) -> None:
-        self.name = name
-        self.age = age
+class _person:
+    def __init__(self, name: str, Age: int) -> None:
+        self.Name = name
+        self.ageAge = Age
 
-    def to_string(self) -> str:
-        return f"{self.name}: {self.age} years old"
+    def ToString(self) -> str:
+        return f"{self.Name}: {self.ageAge} years old"
+
+
+class My_Class:
+    pass
 
 
 def main() -> None:
-    bob = Person("Bob", 19)
-    print(bob.to_string())
+    BoB: _person = _person("Bob", 19)
+    print(BoB.ToString())
 
 
 if __name__ == "__main__":

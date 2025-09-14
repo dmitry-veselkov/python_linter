@@ -1,32 +1,51 @@
 import os
 
 from .config import Config
+from .error import Error
 
 
 class Linter:
+    """Линтер для проверки корректности именования идентификаторов, расстановки пробелов и пустых строк"""
+
     def __init__(self, files_path: str) -> None:
-        (self.files, self.directory) = self._parse_files_path(files_path)
-        self.config = Config.load_config(self.directory)
+        """Инициализация нового линтера для переданного файла или директории файлов"""
+        (self._files, self._directory) = self._parse_files_path(files_path)
+        self._config = Config.load_config(self._directory)
 
     def run(self) -> None:
-        for file_path in self.files:
+        """Запуск линтера для всех файлов"""
+        for file_path in self._files:
             code = self._read_file(file_path)
-            self._run_all_checks(code)
+            file_errors = self._run_all_checks(code)
+            self._print_file_errors(code, file_errors)
 
-    def _run_all_checks(self, code: str) -> None:
-        for rules in Config.RULES.keys():
-            rules_key = Config.RULES[rules]
-            local_config = self.config[rules_key]
-            rules(local_config, code).check()  # type: ignore[abstract]
+    def _run_all_checks(self, code: str) -> list[Error]:
+        """Запуск всех включенных в конфиге проверок для переданного python кода"""
+        all_errors: list[Error] = []
+        for rule in Config.RULES.keys():
+            rule_key = Config.RULES[rule]
+            local_config = self._config[rule_key]
+            rule_errors = rule(local_config, code).check()  # type: ignore[abstract]
+            all_errors.extend(rule_errors)
+        return all_errors
+
+    @staticmethod
+    def _print_file_errors(code: str, file_errors: list[Error]) -> None:
+        """Вывод всех найденных ошибок для переданного кода с указанием номера строки и типа ошибки"""
+        lines = code.split('\n')
+        for error in file_errors:
+            codeline = lines[error.line_number - 1].lstrip()
+            print(f"{error.key}: {error.style.capitalize()} error in the line №{error.line_number} '{codeline}'")
 
     @staticmethod
     def _read_file(file_path: str) -> str:
+        """Получение содержимого переданного файла"""
         with open(file_path) as file:
             return file.read()
 
     @staticmethod
     def _parse_files_path(files_path: str) -> tuple[list[str], str]:
-        """Полученный из командной строки пути метод разбирает на список файлов и их директорию"""
+        """Разбор полученных из командной строки путей на список файлов и их директорию"""
         if os.path.isfile(files_path):
             if Linter._is_python_file(files_path):
                 return [files_path], os.path.dirname(files_path)

@@ -17,5 +17,11 @@ class TestLinter(unittest.TestCase):
         # Linter._parse_files_path("52")
 
     def test_naming(self) -> None:
-        rules = NamingRules(dict(), "def main():")
-        rules.check()
+        code = """
+class myclass:
+    pass
+class _badClassName:
+    pass
+"""
+        rules = NamingRules(dict(), code)
+        print(rules.check())

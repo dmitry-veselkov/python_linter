@@ -33,6 +33,7 @@ class Linter:
     def _print_file_errors(code: str, file_errors: list[Error]) -> None:
         """Вывод всех найденных ошибок для переданного кода с указанием номера строки и типа ошибки"""
         lines = code.split('\n')
+        file_errors.sort(key=lambda x: x.line_number)
         for error in file_errors:
             codeline = lines[error.line_number - 1].lstrip()
             print(f"{error.key}: {error.style.capitalize()} error in the line №{error.line_number} '{codeline}'")

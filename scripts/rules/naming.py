@@ -22,6 +22,7 @@ class NamingRules(Rules):
     _CAMEL_CASE_PATTERN = re.compile(r'^[A-Z][a-zA-Z0-9]*$')
     _SNAKE_CASE_PATTERN = re.compile(r'^[a-z_][a-z0-9_]*$')
 
+    # TODO: Добавить проверку именования для констант
     _CHECKERS = {
         ast.ClassDef: lambda self, node: self._check_class(node),
         ast.FunctionDef: lambda self, node: self._check_function(node),
@@ -29,6 +30,7 @@ class NamingRules(Rules):
         ast.Attribute: lambda self, node: self._check_attribute(node),
     }
 
+    # TODO: перенести все заголовки toml в константы
     _RULES = {
         ast.ClassDef: NamingRule("N801", "class_camel_case", _CAMEL_CASE_PATTERN),
         ast.FunctionDef: NamingRule("N802", "function_snake_case", _SNAKE_CASE_PATTERN),

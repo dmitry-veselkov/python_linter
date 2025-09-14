@@ -4,6 +4,8 @@ from linter import Linter
 
 
 class CLI:
+    """Консольный интерфейс линтера"""
+
     @staticmethod
     def run() -> None:
         """Парсинг полученных аргументов и запуск линтера"""
@@ -14,4 +16,9 @@ class CLI:
         print("Processing...")
 
         linter = Linter(args.files_path)
-        linter.run()
+        # TODO: обработка случая, когда нет ошибок
+        for error, codeline in linter.run():
+            # TODO: (опционально) добавить красок в эти сообщения
+            print(f"Line {error.line_number}: '{codeline}'")
+            print(f"{error.key}: {error.style.capitalize()} error!")
+            print()

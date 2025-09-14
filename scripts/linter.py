@@ -1,4 +1,5 @@
 import os
+from typing import Generator
 
 from .config import Config
 from .error import Error
@@ -12,12 +13,13 @@ class Linter:
         (self._files, self._directory) = self._parse_files_path(files_path)
         self._config = Config.load_config(self._directory)
 
-    def run(self) -> None:
+    def run(self) -> Generator[tuple[Error, str], None, None]:
         """Запуск линтера для всех файлов"""
         for file_path in self._files:
             code = self._read_file(file_path)
             file_errors = self._run_all_checks(code)
-            self._print_file_errors(code, file_errors)
+            for error, codeline in self._parse_file_errors(code, file_errors):
+                yield error, codeline
 
     def _run_all_checks(self, code: str) -> list[Error]:
         """Запуск всех включенных в конфиге проверок для переданного python кода"""
@@ -30,18 +32,18 @@ class Linter:
         return all_errors
 
     @staticmethod
-    def _print_file_errors(code: str, file_errors: list[Error]) -> None:
+    def _parse_file_errors(code: str, file_errors: list[Error]) -> Generator[tuple[Error, str], None, None]:
         """Вывод всех найденных ошибок для переданного кода с указанием номера строки и типа ошибки"""
         lines = code.split('\n')
         file_errors.sort(key=lambda x: x.line_number)
         for error in file_errors:
             codeline = lines[error.line_number - 1].lstrip()
-            print(f"{error.key}: {error.style.capitalize()} error in the line №{error.line_number} '{codeline}'")
+            yield error, codeline
 
     @staticmethod
     def _read_file(file_path: str) -> str:
         """Получение содержимого переданного файла"""
-        with open(file_path) as file:
+        with open(file_path, encoding="utf-8") as file:
             return file.read()
 
     @staticmethod
@@ -52,6 +54,7 @@ class Linter:
                 return [files_path], os.path.dirname(files_path)
             raise ValueError(f"The file '{files_path}' is not a python file")
 
+        # TODO: нет рекурсивного прочтения катологов, вложенные папки игнорируются
         if os.path.isdir(files_path):
             files = []
             for file in os.listdir(files_path):

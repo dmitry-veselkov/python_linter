@@ -1,12 +1,14 @@
 [spaces]
-all_true = true
+trailing_spaces = true
+indentations = true
+operators = true
 
 [empty_lines]
-all_true = true
+check_empty_lines = true
 
 [naming]
-function_snake_case = true #802
-variables_snake_case = true #806
-args_snake_case = true #N803
-class_camel_case = true #N801
-attributes_sname_case = true #N807
+function_snake_case = true
+variables_snake_case = true
+args_snake_case = true
+class_camel_case = true
+attributes_sname_case = true

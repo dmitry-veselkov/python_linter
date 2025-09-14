@@ -1,4 +1,6 @@
 class Error:
+    """Стилистеская ошибка, обнаруженная линтером"""
+
     def __init__(self, style: str, key: str, line_number: int):
         self.key = key
         self.line_number = line_number

@@ -6,10 +6,12 @@ from scripts.rules.naming import NamingRules
 
 class TestLinter(unittest.TestCase):
     def test_syntactic_analysis(self) -> None:
-        # file_path = "./src/"
-        file_path = f"./src/{self.test_syntactic_analysis.__name__}.py"
+        file_path = "../scripts"
         linter = Linter(file_path)
-        linter.run()
+        for error, codeline in linter.run():
+            print(f"Line {error.line_number}: '{codeline}'")
+            print(f"{error.key}: {error.style.capitalize()} error!")
+            print()
 
     def test_path_parser(self) -> None:
         # Linter._parse_files_path(f"./src/{self.test_syntactic_analysis.__name__}.py")

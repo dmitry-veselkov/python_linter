@@ -22,7 +22,6 @@ class NamingRules(Rules):
     _CAMEL_CASE_PATTERN = re.compile(r'^[A-Z][a-zA-Z0-9]*$')
     _SNAKE_CASE_PATTERN = re.compile(r'^[a-z_][a-z0-9_]*$')
 
-    # TODO: Добавить проверку именования для констант
     _CHECKERS = {
         ast.ClassDef: lambda self, node: self._check_class(node),
         ast.FunctionDef: lambda self, node: self._check_function(node),
@@ -30,13 +29,12 @@ class NamingRules(Rules):
         ast.Attribute: lambda self, node: self._check_attribute(node),
     }
 
-    # TODO: перенести все заголовки toml в константы
     _RULES = {
-        ast.ClassDef: NamingRule("N801", "class_camel_case", _CAMEL_CASE_PATTERN),
-        ast.FunctionDef: NamingRule("N802", "function_snake_case", _SNAKE_CASE_PATTERN),
-        ast.arg: NamingRule("N803", "args_snake_case", _SNAKE_CASE_PATTERN),
-        ast.Name: NamingRule("N806", "variables_snake_case", _SNAKE_CASE_PATTERN),
-        ast.Attribute: NamingRule("N807", "attributes_sname_case", _SNAKE_CASE_PATTERN),
+        ast.ClassDef: NamingRule("N001", "class_camel_case", _CAMEL_CASE_PATTERN),
+        ast.FunctionDef: NamingRule("N002", "function_snake_case", _SNAKE_CASE_PATTERN),
+        ast.Name: NamingRule("N003", "variables_snake_case", _SNAKE_CASE_PATTERN),
+        ast.arg: NamingRule("N004", "args_snake_case", _SNAKE_CASE_PATTERN),
+        ast.Attribute: NamingRule("N005", "attributes_snake_case", _SNAKE_CASE_PATTERN),
     }
 
     def __init__(self, config: dict[str, Any], code: str) -> None:
@@ -70,7 +68,7 @@ class NamingRules(Rules):
     def _check_attribute(self, node: ast.Attribute) -> None:
         """Проверка для аттрибутов"""
         if isinstance(node.value, ast.Name) and isinstance(node.ctx, ast.Store) and node.value.id == "self":
-            self._check_name(node, node.attr, self._RULES[ast.Name])
+            self._check_name(node, node.attr, self._RULES[ast.Attribute])
 
     def _check_class_variables(self, node: ast.ClassDef) -> None:
         """Проверка для переменных внутри переданного класса"""
@@ -95,5 +93,9 @@ class NamingRules(Rules):
     def _check_name(self, node: Any, name: str, rule: NamingRule) -> None:
         """Проверка конкретного имени по переданному правилу"""
         match = re.match(pattern=rule.pattern, string=name)
+        style_error = Error.CATCHABLE_N_ERRORS.get(rule.key)
+        if style_error is None:
+            raise ValueError("Unknown error key!")
+
         if self._config.get(rule.toml) and match is None:
-            self._errors.append(Error(style="naming", key=rule.key, line_number=node.lineno))
+            self._errors.append(Error(style_error, line_number=node.lineno))

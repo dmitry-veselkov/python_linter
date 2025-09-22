@@ -1,5 +1,5 @@
 import os
-from typing import Generator
+from typing import Any, Generator
 
 from .config import Config
 from .error import Error
@@ -17,16 +17,17 @@ class Linter:
         """Запуск линтера для всех файлов"""
         for file_path in self._files:
             code = self._read_file(file_path)
-            file_errors = self._run_all_checks(code)
+            file_errors = self.run_all_checks(code, self._config)
             for error, codeline in self._parse_file_errors(code, file_errors):
                 yield error, codeline
 
-    def _run_all_checks(self, code: str) -> list[Error]:
+    @staticmethod
+    def run_all_checks(code: str, config: dict[str, Any]) -> list[Error]:
         """Запуск всех включенных в конфиге проверок для переданного python кода"""
         all_errors: list[Error] = []
         for rule in Config.RULES.keys():
             rule_key = Config.RULES[rule]
-            local_config = self._config[rule_key]
+            local_config = config[rule_key]
             rule_errors = rule(local_config, code).check()  # type: ignore[abstract]
             all_errors.extend(rule_errors)
         return all_errors
@@ -54,7 +55,6 @@ class Linter:
                 return [files_path], os.path.dirname(files_path)
             raise ValueError(f"The file '{files_path}' is not a python file")
 
-        # TODO: нет рекурсивного прочтения катологов, вложенные папки игнорируются
         if os.path.isdir(files_path):
             files = []
             for file in os.listdir(files_path):

@@ -11,4 +11,4 @@ function_snake_case = true
 variables_snake_case = true
 args_snake_case = true
 class_camel_case = true
-attributes_sname_case = true
+attributes_snake_case = true

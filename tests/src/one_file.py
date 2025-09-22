@@ -15,10 +15,12 @@ class My_Class:
     pass
 
 
+# комментарий на новой строке
 def main() -> None:
+    """А здесь вообще докстринг"""
     BoB: _person = _person("Bob", 19)
     print(BoB.ToString())
 
 
 if __name__ == "__main__":
-    main()
+    main()  # комментарии

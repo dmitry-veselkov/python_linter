@@ -20,7 +20,9 @@ class Config(ABC):
     def load_config(directory: str = "") -> dict[str, Any]:
         """Загрузка конфига по переданному (или стандартному) пути"""
         config: dict[str, Any]
-        # TODO: корректное поведение при отсутсвии файла с конфигом
-        with open(file=os.path.join(directory, CONFIG_NAME), mode="rb") as file:
+        path = os.path.join(directory, CONFIG_NAME)
+        if not os.path.exists(path):
+            raise FileNotFoundError("The required config file 'linter_config.toml' was not found!")
+        with open(file=path, mode="rb") as file:
             config = tomllib.load(file)
         return config

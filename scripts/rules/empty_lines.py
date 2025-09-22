@@ -2,7 +2,8 @@ import tokenize as tkn
 from io import StringIO
 from typing import Any, Generator
 
-from ..error import Error
+from scripts.error import Error
+
 from .rules import Rules
 
 
@@ -39,7 +40,7 @@ class EmptyLinesRules(Rules):
     def _check_last_lines(self) -> None:
         """Проверка, что есть пустая строка в конце файла"""
         all_lines = self._code.split('\n')
-        if len(all_lines) < 2:
+        if len(all_lines) < 2 or not self._config.get("check_last_empty_line"):
             return
         two_last_lines = all_lines[-2:]
         if two_last_lines[0].strip() != "" and two_last_lines[1].strip() == "":

@@ -5,6 +5,7 @@ operators = true
 
 [empty_lines]
 check_empty_lines = true
+check_last_empty_line = true
 
 [naming]
 function_snake_case = true

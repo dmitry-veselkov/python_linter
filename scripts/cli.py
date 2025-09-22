@@ -19,11 +19,16 @@ class CLI:
         """Запуск линтера для переданных файлов"""
         linter = Linter(files_path)
         errors_count = 0
+        CLI._print_start_message(files_path)
         for error, codeline in linter.run():
             errors_count += 1
             CLI._print_error(error, codeline)
 
         CLI._print_work_result(errors_count)
+
+    @staticmethod
+    def _print_start_message(files_path: str) -> None:
+        print(f"\n\033[1mLinter started working on '{files_path}':\033[0m\n")
 
     @staticmethod
     def _parse_arguments() -> argparse.Namespace:
@@ -36,14 +41,12 @@ class CLI:
     def _print_error(error: Error, codeline: str) -> None:
         """Вывод ошибки вместе со строкой, на которой ошибка была обнаружена"""
         print(f"Line {error.line_number}: '\033[34m{codeline}\033[0m'")
-        print(f"\033[31m{error.style_error.key}\033[0m: {error.style_error.message}")
-        print()
+        print(f"\033[31m{error.style_error.key}\033[0m: {error.style_error.message}\n")
 
     @staticmethod
     def _print_work_result(errors_count: int) -> None:
         """Финальное сообщение, о числе обнаруженных ошибок"""
         if errors_count == 0:
-            print("\033[32mNo stylistic errors were found!\033[0m")
+            print("\033[32mNo stylistic errors were found!\033[0m\n")
         else:
-            print(f"\033[32m{errors_count} errors were detected!\033[0m")
-        print()
+            print(f"\033[32m{errors_count} errors were detected!\033[0m\n")

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -12,4 +14,9 @@ class Rules(ABC):
 
     @abstractmethod
     def check(self) -> list[Error]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_string_name() -> str:
         pass

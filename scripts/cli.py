@@ -1,4 +1,5 @@
-import argparse
+import click
+import termcolor
 
 from .error import Error
 from .linter import Linter
@@ -8,15 +9,10 @@ class CLI:
     """Консольный интерфейс линтера"""
 
     @staticmethod
-    def run() -> None:
-        """Парсинг полученных аргументов и запуск линтера"""
-        args = CLI._parse_arguments()
-        files_path: str = args.files_path
-        CLI.start_linter(files_path)
-
-    @staticmethod
-    def start_linter(files_path: str) -> None:
-        """Запуск линтера для переданных файлов"""
+    @click.command()
+    @click.option("-files_path", prompt=True)
+    def run(files_path: str) -> None:
+        """Запуск линтера для указанных в командной строке файлов"""
         linter = Linter(files_path)
         errors_count = 0
         CLI._print_start_message(files_path)
@@ -28,25 +24,21 @@ class CLI:
 
     @staticmethod
     def _print_start_message(files_path: str) -> None:
-        print(f"\n\033[1mLinter started working on '{files_path}':\033[0m\n")
-
-    @staticmethod
-    def _parse_arguments() -> argparse.Namespace:
-        """Парсинг аргументов, полученных из консоли"""
-        parser = argparse.ArgumentParser(description="Python Linter")
-        parser.add_argument('files_path', help="Absolute or relative path to input file or directory")
-        return parser.parse_args()
+        """Вывод сообщения о начале работы линтера"""
+        termcolor.cprint(text=f"\nLinter started working on '{files_path}':\n", color='white', attrs=['bold'])
 
     @staticmethod
     def _print_error(error: Error, codeline: str) -> None:
         """Вывод ошибки вместе со строкой, на которой ошибка была обнаружена"""
-        print(f"Line {error.line_number}: '\033[34m{codeline}\033[0m'")
-        print(f"\033[31m{error.style_error.key}\033[0m: {error.style_error.message}\n")
+        codeline_colored = termcolor.colored(codeline, 'blue')
+        error_key_colored = termcolor.colored(error.style_error.key, 'red')
+        print(f"Line {error.line_number}: {codeline_colored}")
+        print(f"{error_key_colored}: {error.style_error.message}\n")
 
     @staticmethod
     def _print_work_result(errors_count: int) -> None:
         """Финальное сообщение, о числе обнаруженных ошибок"""
         if errors_count == 0:
-            print("\033[32mNo stylistic errors were found!\033[0m\n")
+            termcolor.cprint(text="No stylistic errors were found!\n", color='green')
         else:
-            print(f"\033[32m{errors_count} errors were detected!\033[0m\n")
+            termcolor.cprint(text=f"{errors_count} errors were detected!\n", color='green')

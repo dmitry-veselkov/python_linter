@@ -50,6 +50,10 @@ class NamingRules(Rules):
                     checker(self, node)
         return self._errors
 
+    @staticmethod
+    def get_string_name() -> str:
+        return "naming"
+
     def _check_class(self, node: ast.ClassDef) -> None:
         """Проверка для классов"""
         self._check_name(node, node.name, self._RULES[ast.ClassDef])

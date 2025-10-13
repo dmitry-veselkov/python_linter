@@ -1,19 +1,17 @@
 CONFIG_NAME = "linter_config.toml"
 
-UNIVERSAL_CONFIG = {
-    "spaces": {
-        "trailing_spaces": True,
-        "indentations": True,
-        "operators": True,
-    },
-    "empty_lines": {
-        "check_empty_lines": True,
-    },
-    "naming": {
-        "function_snake_case": True,
-        "variables_snake_case": True,
-        "args_snake_case": True,
-        "class_camel_case": True,
-        "attributes_snake_case": True,
-    },
+TOML_NAMES = {
+    "spaces": [
+        "trailing_spaces",
+        "indentations",
+        "operators",
+    ],
+    "empty_lines": ["check_empty_lines", "check_last_empty_line"],
+    "naming": [
+        "function_snake_case",
+        "variables_snake_case",
+        "args_snake_case",
+        "class_camel_case",
+        "attributes_snake_case",
+    ],
 }

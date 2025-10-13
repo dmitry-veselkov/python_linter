@@ -1,9 +1,9 @@
 import unittest
-from typing import Type
+
+from click.testing import CliRunner
 
 from scripts.cli import CLI
-from scripts.config import Config
-from scripts.constants import UNIVERSAL_CONFIG
+from scripts.constants import TOML_NAMES
 from scripts.rules.empty_lines import EmptyLinesRules
 from scripts.rules.naming import NamingRules
 from scripts.rules.rules import Rules
@@ -11,13 +11,16 @@ from scripts.rules.spaces import SpacesRules
 
 
 class TestLinter(unittest.TestCase):
+    def setUp(self) -> None:
+        self.runner = CliRunner()
+
     def test_one_file(self) -> None:
         file_path = "./src/one_file.py"
-        CLI.start_linter(file_path)
+        self.runner.invoke(CLI.run, ["-files_path", file_path])
 
     def test_many_files(self) -> None:
         directory = "./src/"
-        CLI.start_linter(directory)
+        self.runner.invoke(CLI.run, ["-files_path", directory])
 
     def test_spaces_rules(self) -> None:
         code_samples = {
@@ -48,10 +51,15 @@ class TestLinter(unittest.TestCase):
         }
         self._run_tests_for_rule(EmptyLinesRules, code_samples)
 
-    def _run_tests_for_rule(self, rule: Type[Rules], code_samples: dict[str, str]) -> None:
+    def _run_tests_for_rule(self, rule: type[Rules], code_samples: dict[str, str]) -> None:
         for key, code in code_samples.items():
-            rule_toml = Config.RULES[rule]
-            linter = rule(UNIVERSAL_CONFIG[rule_toml], code)
+            rule_toml = rule.get_string_name()
+            config = self._generate_all_true_config(rule_toml)
+            linter = rule(config, code)
             errors = list(linter.check())
             self.assertEqual(1, len(errors))
             self.assertEqual(key, errors[0].style_error.key)
+
+    @staticmethod
+    def _generate_all_true_config(rule_name: str) -> dict[str, bool]:
+        return {check_name: True for check_name in TOML_NAMES[rule_name]}

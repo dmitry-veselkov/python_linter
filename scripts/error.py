@@ -1,8 +1,11 @@
-class StyleError:
-    def __init__(self, key: str, message: str):
-        """Код и сообщение для выбранного типа ошибок"""
-        self.key = key
-        self.message = message
+from pydantic import BaseModel
+
+
+class StyleError(BaseModel):
+    """Код и сообщение для выбранного типа ошибок"""
+
+    key: str
+    message: str
 
 
 class Error:

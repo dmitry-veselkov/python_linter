@@ -22,6 +22,10 @@ class EmptyLinesRules(Rules):
 
         return self._errors
 
+    @staticmethod
+    def get_string_name() -> str:
+        return "empty_lines"
+
     def _check_empty_lines_count(self, tokens: Generator[tkn.TokenInfo, None, None]) -> None:
         """Проверка, что число пустых строк подряд не превышает двух"""
         current_line = counter = 0

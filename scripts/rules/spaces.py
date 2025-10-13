@@ -28,6 +28,10 @@ class SpacesRules(Rules):
             last_lineno = token.start[0]
         return self._errors
 
+    @staticmethod
+    def get_string_name() -> str:
+        return "spaces"
+
     def _check_comments(self, token: tkn.TokenInfo) -> None:
         """Проверка оформления комментариев"""
         if not self._config.get("comments") and token.type != tkn.COMMENT:

@@ -1,0 +1,15 @@
+[spaces]
+trailing_spaces = true
+indentations = true
+operators = true
+
+[empty_lines]
+check_empty_lines = true
+check_last_empty_line = true
+
+[naming]
+function_snake_case = true
+variables_snake_case = true
+args_snake_case = true
+class_camel_case = true
+attributes_snake_case = true

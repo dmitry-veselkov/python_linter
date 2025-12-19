@@ -2,6 +2,7 @@
 trailing_spaces = true
 indentations = true
 operators = true
+comments = true
 
 [empty_lines]
 check_empty_lines = true

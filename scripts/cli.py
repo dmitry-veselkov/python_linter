@@ -11,9 +11,10 @@ class CLI:
     @staticmethod
     @click.command()
     @click.option("-files_path", prompt=True)
-    def run(files_path: str) -> None:
+    @click.option('-a', '--auto_correct', is_flag=True)
+    def run(files_path: str, auto_correct: bool) -> None:
         """Запуск линтера для указанных в командной строке файлов"""
-        linter = Linter(files_path)
+        linter = Linter(files_path, auto_correct)
         errors_count = 0
         CLI._print_start_message(files_path)
         for error, codeline in linter.run():

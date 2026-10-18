@@ -39,3 +39,11 @@ class Error:
         """Инициализация новой ошибки"""
         self.style_error = style_error
         self.line_number = line_number
+
+
+class NamingError(Error):
+    """Класс для ошибок именования, сохраняющий еще и само имя"""
+
+    def __init__(self, style_error: StyleError, line_number: int, wrong_name: str) -> None:
+        super().__init__(style_error, line_number)
+        self.wrong_name = wrong_name

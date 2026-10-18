@@ -1,9 +1,10 @@
 import tokenize as tkn
 from io import StringIO
-from typing import Any, Generator
+from typing import Any, Callable, Generator
 
 from scripts.error import Error
 
+from ..fixer import Fixer
 from .rules import Rules
 
 
@@ -22,6 +23,10 @@ class EmptyLinesRules(Rules):
 
         return self._errors
 
+    def fix(self) -> str:
+        """Запуск нужного, исправляющего данный тип ошибок класса"""
+        return EmptyLinesFixer(self._code).fix(self._errors)
+
     @staticmethod
     def get_string_name() -> str:
         return "empty_lines"
@@ -37,7 +42,6 @@ class EmptyLinesRules(Rules):
                 counter += 1
                 if counter > 2:
                     self._add_error(key="E001", lineno=current_line)
-                    counter = 0
             else:
                 counter = 0
 
@@ -57,9 +61,31 @@ class EmptyLinesRules(Rules):
             return False
         return token.line.strip() == ""
 
-    def _add_error(self, key: str, lineno: int) -> None:
+    def _add_error(self, key: str, lineno: int) -> Error:
         """Добавление в список ошибки, обнаруженной на указанной строке, с переданным кодом"""
         style_error = Error.CATCHABLE_E_ERRORS.get(key)
         if style_error is None:
             raise ValueError("Unknown error key!")
-        self._errors.append(Error(style_error, line_number=lineno))
+        error = Error(style_error, line_number=lineno)
+        self._errors.append(error)
+        return error
+
+
+class EmptyLinesFixer(Fixer):
+    """Класс, исправляющий ошибки расстановки пробелов и отступов"""
+
+    def __init__(self, code: str):
+        fixers: dict[str, Callable[[int], None]] = {
+            "E001": self._remove_extra_lines,
+            "E002": self._add_last_empty_line,
+        }
+        super().__init__(code, fixers)
+
+    def _remove_extra_lines(self, lineno: int) -> None:
+        """Удаление лишних строк"""
+        self._code_lines.pop(lineno)
+        self._offset += 1
+
+    def _add_last_empty_line(self, lineno: int) -> None:
+        """Добавление пустой строки в конце файла при ее отсутсвии"""
+        self._code_lines.append('')

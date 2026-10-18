@@ -5,6 +5,7 @@ TOML_NAMES = {
         "trailing_spaces",
         "indentations",
         "operators",
+        "comments",
     ],
     "empty_lines": ["check_empty_lines", "check_last_empty_line"],
     "naming": [
